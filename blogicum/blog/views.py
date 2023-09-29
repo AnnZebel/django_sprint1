@@ -1,6 +1,4 @@
-
-
-from django.http import HttpResponse
+from django.http import Http404
 from django.shortcuts import render
 
 
@@ -48,14 +46,18 @@ posts = [
 ]
 
 
+post_list = {post['id']: post for post in posts}
+
+
 def index(request):
-    context = {'post': reversed(posts)}
-    return render(request, 'blog/index.html', context)
+    return render(request, 'blog/index.html', {'post': reversed(posts)})
 
 
 def post_detail(request, id):
-    context = {'post': posts[id]}
-    return render(request, 'blog/detail.html', context)
+    if id in post_list:
+        context = {'post': post_list[id]}
+        return render(request, 'blog/detail.html', context)
+    raise Http404('Страница не найдена')
 
 
 def category_posts(request, category_slug):
